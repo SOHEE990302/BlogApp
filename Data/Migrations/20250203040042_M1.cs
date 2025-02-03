@@ -15,18 +15,18 @@ namespace BlogApp.Data.Migrations
                 name: "Articles",
                 columns: table => new
                 {
-                    ArticleId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     Body = table.Column<string>(type: "TEXT", nullable: false),
+                    ContributorUsername = table.Column<string>(type: "TEXT", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ContributorUsername = table.Column<string>(type: "TEXT", nullable: false)
+                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Articles", x => x.ArticleId);
+                    table.PrimaryKey("PK_Articles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(

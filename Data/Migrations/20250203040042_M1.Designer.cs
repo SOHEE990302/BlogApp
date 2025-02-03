@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogApp.Data.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20250203030229_M1")]
+    [Migration("20250203040042_M1")]
     partial class M1
     {
         /// <inheritdoc />
@@ -22,7 +22,7 @@ namespace BlogApp.Data.Migrations
 
             modelBuilder.Entity("BlogApp.Models.Article", b =>
                 {
-                    b.Property<int>("ArticleId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -37,17 +37,18 @@ namespace BlogApp.Data.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("ArticleId");
+                    b.HasKey("Id");
 
                     b.ToTable("Articles");
                 });
