@@ -1,0 +1,42 @@
+﻿@model IEnumerable<BlogApp.Models.Article>
+
+@{
+    ViewData["Title"] = "Articles";
+}
+
+<h2>Articles</h2>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <a asp-controller="Article" asp-action="Create" class="btn btn-primary mb-3">New Post</a>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Create Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var article in Model)
+        {
+            <tr>
+                <td>@article.Title</td>
+                <td>@article.ContributorUsername</td>
+                <td>@article.CreateDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <a asp-controller="Article" asp-action="Details" asp-route-id="@article.Id" class="btn btn-info">Details</a>
+                    
+                    @if (User.Identity.IsAuthenticated && article.ContributorUsername == User.Identity.Name)
+                    {
+                        <a asp-controller="Article" asp-action="Edit" asp-route-id="@article.Id" class="btn btn-warning">Edit</a>
+                        <a asp-controller="Article" asp-action="Delete" asp-route-id="@article.Id" class="btn btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
