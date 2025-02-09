@@ -1,17 +1,32 @@
 using Microsoft.EntityFrameworkCore;
 using BlogApp.Data;
 using BlogApp.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddHttpContextAccessor();
 
 // Configure SQLite database
 builder.Services.AddDbContext<BlogDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add authentication and authorization
+builder.Services.AddAuthentication("CookieAuthentication")
+    .AddCookie("CookieAuthentication", options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -30,7 +45,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Add authentication and authorization middleware
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseSession();
 
 // Ensure database migration and seed data on startup
@@ -38,22 +57,18 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
+    var logger = services.GetRequiredService<ILogger<Program>>();
     try
     {
         var context = services.GetRequiredService<BlogDbContext>();
-
-        // 🚨 마이그레이션 강제 실행
         context.Database.Migrate();
-
-        // 🚨 Seed 데이터 강제 삽입
         SeedData.Initialize(services);
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"An error occurred while migrating or seeding the database: {ex.Message}");
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
     }
 }
-
 
 app.MapControllerRoute(
     name: "default",

@@ -21,28 +21,35 @@ namespace BlogApp.Controllers
             return View();
         }
 
-[HttpPost]
-public IActionResult Login(string username, string password)
-{
-    var user = _context.Users.FirstOrDefault(u => u.Username == username.Trim() && u.Password == password.Trim());
+        [HttpPost]
+        public IActionResult Login(string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                ViewBag.ErrorMessage = "Username and password are required.";
+                return View();
+            }
 
-    if (user == null)
-    {
-        ViewBag.ErrorMessage = "Invalid username or password.";
-        return View();
-    }
+            var user = _context.Users.FirstOrDefault(u => u.Username == username.Trim());
 
-    if (user.Role == "contributor")
-    {
-        ViewBag.ErrorMessage = "Your account requires administrator approval.";
-        return View();
-    }
+            if (user == null || user.Password != password.Trim()) 
+            {
+                ViewBag.ErrorMessage = "Invalid username or password.";
+                return View();
+            }
 
-    _httpContextAccessor.HttpContext!.Session.SetString("Username", user.Username);
-    _httpContextAccessor.HttpContext.Session.SetString("Role", user.Role);
+            if (user.Role == "contributor")
+            {
+                ViewBag.ErrorMessage = "Your account requires administrator approval.";
+                return View();
+            }
 
-    return RedirectToAction("Index", "Home");
-}
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetString("Role", user.Role);
+
+            return RedirectToAction("Index", "Home");
+        }
+
 
 
         public IActionResult Logout()
@@ -57,20 +64,20 @@ public IActionResult Login(string username, string password)
             return View();
         }
 
-[HttpPost]
-public IActionResult Register(User model)
-{
-    if (!ModelState.IsValid)
-    {
-        return View(model); // 유효성 검사 실패 시 입력값과 오류 메시지를 그대로 유지
-    }
+        [HttpPost]
+        public IActionResult Register(User model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
-    model.Role = "contributor"; // 기본 역할 설정
-    _context.Users.Add(model);
-    _context.SaveChanges();
+            model.Role = "contributor";
+            _context.Users.Add(model);
+            _context.SaveChanges();
 
-    return RedirectToAction("PendingApproval");
-}
+            return RedirectToAction("PendingApproval");
+        }
 
 
         [HttpGet]
