@@ -29,9 +29,10 @@ else
                     @article.CreateDate.ToString("MMMM dd, yyyy")
                 </p>
                 <p>
-                    @article.Body.Substring(0, Math.Min(100, article.Body.Length))...
+                    @Html.Raw(article.Body.Substring(0, Math.Min(100, article.Body.Length)))...
                     <a asp-action="Details" asp-route-id="@article.ArticleId">Read More</a>
                 </p>
+
 
                 @if (article.ContributorUsername == currentUsername || isAdmin)
                 {
