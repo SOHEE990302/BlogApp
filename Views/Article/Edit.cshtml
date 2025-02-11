@@ -1,14 +1,12 @@
 ﻿@model BlogApp.Models.Article
 
-@{
-    ViewData["Title"] = "Edit Article";
-}
-
 <h2>Edit Article</h2>
 
 <form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ContributorUsername" />
     <input type="hidden" asp-for="ArticleId" />
-
+    
     <div class="form-group">
         <label asp-for="Title" class="form-label">Title</label>
         <input asp-for="Title" class="form-control" />
