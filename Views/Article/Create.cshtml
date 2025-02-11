@@ -7,6 +7,7 @@
 <h2>Create Article</h2>
 
 <form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
     <div class="form-group">
         <label asp-for="Title" class="form-label">Title</label>
         <input asp-for="Title" class="form-control" />
@@ -21,7 +22,7 @@
 
     <div class="form-group">
         <label asp-for="StartDate" class="form-label">Start Date</label>
-        <input asp-for="StartDate" type="date" class="form-control" />
+        <input asp-for="StartDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
         <span asp-validation-for="StartDate" class="text-danger"></span>
     </div>
 
