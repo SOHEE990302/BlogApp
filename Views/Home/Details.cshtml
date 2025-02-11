@@ -1,0 +1,16 @@
+﻿@model BlogApp.Models.Article
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+
+<p>
+    <strong>@Model.ContributorUsername</strong>,
+    @Model.CreateDate.ToString("MMMM dd, yyyy")
+</p>
+
+<p>@Html.Raw(Model.Body)</p>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Articles</a>
