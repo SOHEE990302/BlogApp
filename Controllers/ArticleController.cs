@@ -53,18 +53,33 @@ namespace BlogApp.Controllers
         [Authorize(Roles = "approved_contributor")]
         public IActionResult Create(Article model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+
+            // if (!ModelState.IsValid)
+            // {
+            //     return View(model);
+            // }
+
 
             model.CreateDate = DateTime.UtcNow;
-            model.ContributorUsername = HttpContext.User.Identity.Name; // 현재 로그인 사용자
+
+            // Ensure ContributorUsername is correctly set
+            model.ContributorUsername = HttpContext.User.Identity.Name;
+
+            // Double-check if model binding is overwriting the ContributorUsername (check if it’s already populated)
+            if (string.IsNullOrEmpty(model.ContributorUsername))
+            {
+                Console.WriteLine("ContributorUsername is empty, setting it manually.");
+                model.ContributorUsername = HttpContext.User.Identity.Name; // Set the current user
+            }
+
             _context.Articles.Add(model);
             _context.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index"); // Redirect after successful creation
         }
+
+
+
 
         // 게시글 수정 페이지
         [Authorize(Roles = "approved_contributor")]
@@ -85,26 +100,37 @@ namespace BlogApp.Controllers
         [Authorize(Roles = "approved_contributor")]
         public IActionResult Edit(Article model)
         {
+            // Check if the model is valid
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View(model); // Return the view with validation errors
             }
 
+            // Log the values to verify
+            Console.WriteLine($"ArticleId: {model.ArticleId}, Title: {model.Title}, Body: {model.Body}");
+
+            // Find the article by its ArticleId
             var article = _context.Articles.FirstOrDefault(a => a.ArticleId == model.ArticleId);
 
             if (article == null || article.ContributorUsername != HttpContext.User.Identity.Name)
             {
-                return Unauthorized(); // 본인 글이 아니면 수정 불가
+                return Unauthorized(); // Check if the article exists and if the current user is the author
             }
 
+            // Update the article's properties
             article.Title = model.Title;
             article.Body = model.Body;
             article.StartDate = model.StartDate;
             article.EndDate = model.EndDate;
+
+            // Save changes to the database
             _context.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index"); // Redirect to the Index page after successful edit
         }
+
+
+
 
         // 게시글 삭제
         [Authorize(Roles = "approved_contributor")]
