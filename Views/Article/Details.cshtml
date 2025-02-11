@@ -11,6 +11,6 @@
     @Model.CreateDate.ToString("MMMM dd, yyyy")
 </p>
 
-<p>@Model.Body</p>
+<p>@Html.Raw(Model.Body)</p>
 
 <a asp-action="Index" class="btn btn-secondary">Back to Articles</a>
