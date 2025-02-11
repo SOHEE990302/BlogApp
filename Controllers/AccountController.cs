@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using BlogApp.Models;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace BlogApp.Controllers
 {
@@ -21,8 +24,10 @@ namespace BlogApp.Controllers
             return View();
         }
 
+
+
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
@@ -32,7 +37,7 @@ namespace BlogApp.Controllers
 
             var user = _context.Users.FirstOrDefault(u => u.Username == username.Trim());
 
-            if (user == null || user.Password != password.Trim()) 
+            if (user == null || user.Password != password.Trim())
             {
                 ViewBag.ErrorMessage = "Invalid username or password.";
                 return View();
@@ -44,17 +49,25 @@ namespace BlogApp.Controllers
                 return View();
             }
 
-            HttpContext.Session.SetString("Username", user.Username);
-            HttpContext.Session.SetString("Role", user.Role);
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
             return RedirectToAction("Index", "Home");
         }
 
 
-
-        public IActionResult Logout()
+        [HttpPost]
+        public async Task<IActionResult> Logout()
         {
-            _httpContextAccessor.HttpContext!.Session.Clear();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
         }
 
@@ -78,7 +91,6 @@ namespace BlogApp.Controllers
 
             return RedirectToAction("PendingApproval");
         }
-
 
         [HttpGet]
         public IActionResult PendingApproval()

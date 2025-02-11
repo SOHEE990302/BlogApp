@@ -20,11 +20,14 @@ builder.Services.AddDbContext<BlogDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add authentication and authorization
-builder.Services.AddAuthentication("CookieAuthentication")
-    .AddCookie("CookieAuthentication", options =>
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme) // 인증 기본 스키마 설정
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
         options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7); 
+        options.SlidingExpiration = true; 
     });
 builder.Services.AddAuthorization();
 

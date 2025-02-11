@@ -2,40 +2,48 @@
 
 @{
     ViewData["Title"] = "Articles";
+    var currentUsername = User.Identity.Name;
+    var isAdmin = User.IsInRole("admin");
 }
 
 <h2>Articles</h2>
 
 @if (User.Identity.IsAuthenticated)
 {
-    <a asp-action="Create" class="btn btn-primary">Create New Article</a>
+    <a asp-action="Create" class="btn btn-primary mb-3">Create New Article</a>
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Contributor</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
+@if (!Model.Any())
+{
+    <p>No articles are currently available.</p>
+}
+else
+{
+    <div class="list-group">
         @foreach (var article in Model)
         {
-            <tr>
-                <td>@article.Title</td>
-                <td>@article.ContributorUsername</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@article.Id" class="btn btn-info">Details</a>
-                    
-                    @if (User.Identity.IsAuthenticated && User.Identity.Name == article.ContributorUsername)
-                    {
-                        <a asp-action="Edit" asp-route-id="@article.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@article.Id" class="btn btn-danger">Delete</a>
-                    }
-                </td>
-            </tr>
+            <div class="list-group-item mb-3">
+                <h4>@article.Title</h4>
+                <p>
+                    <strong>@article.ContributorUsername</strong>,
+                    @article.CreateDate.ToString("MMMM dd, yyyy")
+                </p>
+                <p>
+                    @article.Body.Substring(0, Math.Min(100, article.Body.Length))...
+                    <a asp-action="Details" asp-route-id="@article.ArticleId">Read More</a>
+                </p>
+
+                @if (article.ContributorUsername == currentUsername || isAdmin)
+                {
+                    <div class="mt-2">
+                        <a asp-action="Edit" asp-route-id="@article.ArticleId" class="btn btn-sm btn-warning">Edit</a>
+                        <form asp-action="Delete" asp-route-id="@article.ArticleId" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </div>
+                }
+            </div>
         }
-        }
-    </tbody>
-</table>
+    </div>
+}

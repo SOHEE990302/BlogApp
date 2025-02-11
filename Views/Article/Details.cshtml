@@ -6,6 +6,11 @@
 
 <h2>@Model.Title</h2>
 
+<p>
+    <strong>@Model.ContributorUsername</strong>,
+    @Model.CreateDate.ToString("MMMM dd, yyyy")
+</p>
+
 <p>@Model.Body</p>
-<p><strong>Author:</strong> @Model.ContributorUsername</p>
-<p><strong>Created:</strong> @Model.CreateDate.ToString("yyyy-MM-dd")</p>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Articles</a>
