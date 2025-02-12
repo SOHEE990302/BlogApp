@@ -42,7 +42,7 @@ namespace BlogApp.Controllers
         }
 
         // 게시글 작성 페이지
-        [Authorize(Roles = "approved_contributor")] // 승인된 Contributor만 접근 가능
+        [Authorize(Roles = "approved_contributor,admin")] // 승인된 Contributor와 관리자만 접근 가능
         public IActionResult Create()
         {
             return View();
@@ -50,7 +50,7 @@ namespace BlogApp.Controllers
 
         // 게시글 작성 (POST)
         [HttpPost]
-        [Authorize(Roles = "approved_contributor")]
+        [Authorize(Roles = "approved_contributor,admin")]
         public IActionResult Create(Article model)
         {
 
@@ -82,7 +82,7 @@ namespace BlogApp.Controllers
 
 
         // 게시글 수정 페이지
-        [Authorize(Roles = "approved_contributor")]
+        [Authorize(Roles = "approved_contributor,admin")]
         public IActionResult Edit(int id)
         {
             var article = _context.Articles.FirstOrDefault(a => a.ArticleId == id);
@@ -97,7 +97,7 @@ namespace BlogApp.Controllers
 
         // 게시글 수정 (POST)
         [HttpPost]
-        [Authorize(Roles = "approved_contributor")]
+        [Authorize(Roles = "approved_contributor,admin")]
         public IActionResult Edit(Article model)
         {
             // Check if the model is valid
@@ -133,7 +133,7 @@ namespace BlogApp.Controllers
 
 
         // 게시글 삭제
-        [Authorize(Roles = "approved_contributor")]
+        [Authorize(Roles = "approved_contributor,admin")]
         public IActionResult Delete(int id)
         {
             var article = _context.Articles.FirstOrDefault(a => a.ArticleId == id);
