@@ -87,7 +87,7 @@ namespace BlogApp.Controllers
         {
             var article = _context.Articles.FirstOrDefault(a => a.ArticleId == id);
 
-            if (article == null || article.ContributorUsername != HttpContext.User.Identity.Name)
+            if (article == null || article.ContributorUsername != HttpContext.User.Identity.Name && !User.IsInRole("admin"))
             {
                 return Unauthorized(); // 본인 글이 아니면 접근 불가
             }
@@ -112,7 +112,7 @@ namespace BlogApp.Controllers
             // Find the article by its ArticleId
             var article = _context.Articles.FirstOrDefault(a => a.ArticleId == model.ArticleId);
 
-            if (article == null || article.ContributorUsername != HttpContext.User.Identity.Name)
+            if (article == null || article.ContributorUsername != HttpContext.User.Identity.Name && !User.IsInRole("admin"))
             {
                 return Unauthorized(); // Check if the article exists and if the current user is the author
             }
@@ -138,7 +138,7 @@ namespace BlogApp.Controllers
         {
             var article = _context.Articles.FirstOrDefault(a => a.ArticleId == id);
 
-            if (article == null || article.ContributorUsername != HttpContext.User.Identity.Name)
+            if (article == null || article.ContributorUsername != HttpContext.User.Identity.Name && !User.IsInRole("admin"))
             {
                 return Unauthorized(); // 본인 글이 아니면 삭제 불가
             }
