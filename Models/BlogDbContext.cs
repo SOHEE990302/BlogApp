@@ -8,5 +8,6 @@ namespace BlogApp.Models
 
         public DbSet<User> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
+        
     }
 }
