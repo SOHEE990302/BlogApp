@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,13 +14,8 @@
 </head>
 
 <body>
-    @using Microsoft.AspNetCore.Http
-    @inject IHttpContextAccessor HttpContextAccessor
-
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BlogApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
@@ -31,11 +28,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                                asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
 
-                        @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext?.Session.GetString("Username")))
+                        @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Article" asp-action="Index">Articles</a>
@@ -45,11 +41,11 @@
 
                     <ul class="navbar-nav">
                         @{
-                            var username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
-                            var role = HttpContextAccessor.HttpContext?.Session.GetString("Role");
+                            var username = User.Identity.IsAuthenticated ? User.Identity.Name : null;
+                            var isAdmin = User.IsInRole("admin");
                         }
 
-                        @if (!string.IsNullOrEmpty(username))
+                        @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <span class="navbar-text text-dark me-2">
@@ -57,11 +53,10 @@
                                 </span>
                             </li>
 
-                            @if (role == "admin")
+                            @if (isAdmin)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Admin
-                                        Dashboard</a>
+                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a>
                                 </li>
                             }
 
@@ -86,14 +81,13 @@
         </nav>
     </header>
 
-
-
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
+<<<<<<< HEAD
 <footer class="border-top footer text-muted">
     <div>
         &copy; 2025 - BlogApp - A01366230 Davin Higo, A01259986 Noel Kim, A01323140 Sohee Hwang
@@ -101,6 +95,13 @@
 </footer>
 
 
+=======
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - BlogApp - Sohee Hwang - Noel Kim - Davin Higo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+>>>>>>> faab2c4ac44995010eccef94053d7b3f06617ae9
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
