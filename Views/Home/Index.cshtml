@@ -1,33 +1,58 @@
 ﻿@model IEnumerable<BlogApp.Models.Article>
 
 @{
-    ViewData["Title"] = "Articles";
+    ViewData["Title"] = "Latest Articles";
     var currentUsername = User.Identity.Name;
     var isAdmin = User.IsInRole("admin");
 }
 
-<h2>Articles</h2>
+<!-- CSS 외부 파일 적용 -->
+<link rel="stylesheet" href="~/css/site.css" />
 
-@if (!Model.Any())
-{
-    <p>No articles are currently available.</p>
-}
-else
-{
-    <div class="list-group">
-        @foreach (var article in Model)
-        {
-            <div class="list-group-item mb-3">
-                <h4>@article.Title</h4>
-                <p>
-                    <strong>@article.ContributorUsername</strong>,
-                    @article.CreateDate.ToString("MMMM dd, yyyy")
-                </p>
-                <p>
-                    @Html.Raw(article.Body.Substring(0, Math.Min(100, article.Body.Length)))...
-                    <a asp-action="Details" asp-route-id="@article.ArticleId">Read More</a>
-                </p>
-            </div>
-        }
+<!-- Hero Section -->
+<div class="hero-section bg-light py-5 mb-4">
+    <div class="container text-center">
+        <h1 class="display-4">Welcome to Our Blog</h1>
+        <p class="lead">Explore the latest articles, insights, and stories from our contributors.</p>
+        <a href="/Article" class="btn btn-primary btn-lg">Explore Articles</a>
     </div>
-}
+</div>
+
+<!-- Latest Articles Section -->
+<div class="container" id="latest-articles">
+    <h2 class="text-center mb-4 wave-animation">
+        @foreach (char letter in "Latest Articles")
+        {
+            <span>@letter</span>
+        }
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <p class="text-center">No articles are currently available. Check back later!</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var article in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <a asp-action="Details" asp-route-id="@article.ArticleId" class="article-card-link">
+                        <div class="card h-100 shadow-sm article-card">
+                            <div class="card-body">
+                                <h4 class="card-title">@article.Title</h4>
+                                <p class="card-subtitle mb-2 text-muted">
+                                    <strong>By @article.ContributorUsername</strong> | @article.CreateDate.ToString("MMMM dd, yyyy")
+                                </p>
+                                <p class="card-text">
+                                    @Html.Raw(article.Body.Substring(0, Math.Min(100, article.Body.Length)))...
+                                    <span class="read-more">Read More</span>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>
